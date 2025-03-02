@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Purchase Prediction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #eceff1, #f5f5f5);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', sans-serif;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+        .btn-custom {
+            background: linear-gradient(90deg, #007aff, #34c759);
+            border: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 50px;
+            transition: 0.3s;
+        }
+        .btn-custom:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(52, 199, 89, 0.4);
+        }
+        .character {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card animate__fadeInUp">
+        <svg id="character" class="character" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="80" fill="#FFD700" />
+            <circle cx="75" cy="85" r="10" fill="#000" />
+            <circle cx="125" cy="85" r="10" fill="#000" />
+            <path d="M70 120 Q100 150, 130 120" stroke="#000" stroke-width="5" fill="none"/>
+        </svg>
+        <h2 class="text-center mb-4">Purchase Prediction</h2>
+        <form id="predictForm">
+            <input type="text" class="form-control mb-3" id="gender" placeholder="Gender (Male/Female)">
+            <input type="number" class="form-control mb-3" id="age" placeholder="Age">
+            <input type="number" class="form-control mb-3" id="salary" placeholder="Estimated Salary">
+            <button type="submit" class="btn btn-custom w-100">Predict</button>
+        </form>
+        <h3 class="text-center mt-3" id="result"></h3>
+    </div>
+
+    <script>
+        // Load animated Lottie character
+        anime({
+                targets: '#character',
+                scale: [0.5, 1],
+                opacity: [0, 1],
+                duration: 1000,
+                easing: 'easeOutElastic'
+            });
+    
+        // Handle form submission
+        document.getElementById("predictForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let gender = document.getElementById("gender").value;
+            let age = document.getElementById("age").value;
+            let salary = document.getElementById("salary").value;
+    
+            fetch("/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ Gender: gender, Age: age, EstimatedSalary: salary })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let result = data.prediction === 1 ? "✅ Likely to Purchase!" : "❌ Not Likely to Purchase.";
+                document.getElementById("result").innerText = result;
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+</body>
+</html>
